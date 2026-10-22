@@ -10,7 +10,7 @@ KEYWORD = "Long-stay visa"
 
 
 def env(name, default=""):
-           return "".join((os.getenv(name) or default).split())
+    return "".join((os.getenv(name) or default).split())
 
 
 def send_ntfy(msg):
@@ -50,8 +50,8 @@ def send_whatsapp(msg):
               "To": to, "Body": msg},
         timeout=20,
     )
-           if not r.ok:
-           raise RuntimeError(f"{r.status_code} {r.text[:300]}")
+    if not r.ok:
+        raise RuntimeError(f"{r.status_code} {r.text[:300]}")
 
 
 def alert(msg):
