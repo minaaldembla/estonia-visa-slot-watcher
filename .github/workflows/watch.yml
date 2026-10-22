@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +25,7 @@ jobs:
       - run: python check.py
         env:
           TEST_ALERT: ${{ github.event.inputs.test }}
+          KEYWORD: ${{ vars.KEYWORD }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
