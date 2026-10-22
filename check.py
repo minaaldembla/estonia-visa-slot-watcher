@@ -6,7 +6,7 @@ import requests
 from playwright.sync_api import sync_playwright
 
 URL = "https://broneering.mfa.ee/en/"
-KEYWORD = "Long-stay visa"
+KEYWORD = os.getenv("KEYWORD", "").strip() or "Long-stay visa"
 
 
 def env(name, default=""):
@@ -81,16 +81,19 @@ with sync_playwright() as p:
     first.select_option(label=target)
 
     found = False
+    seen = {}
     for _ in range(12):
         page.wait_for_timeout(1000)
         selects = page.locator("select")
         for i in range(1, selects.count()):
             texts = selects.nth(i).locator("option").all_inner_texts()
+            seen[i] = texts
             if any(KEYWORD.lower() in t.lower() for t in texts):
                 found = True
         if found:
             break
 
+    print("Dropdown 2 options seen:", seen)
     print("SLOT OPEN" if found else "no slot")
     if found:
         alert(f"Estonia Embassy New Delhi: '{KEYWORD}' is selectable NOW! Book: {URL}")
