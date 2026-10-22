@@ -14,14 +14,13 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 6
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install playwright requests
-      - run: playwright install --with-deps chromium
       - run: python check.py
         env:
           TEST_ALERT: ${{ github.event.inputs.test }}
