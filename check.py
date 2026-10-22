@@ -68,9 +68,23 @@ if env("TEST_ALERT") == "true":
     raise SystemExit(0)
 
 with sync_playwright() as p:
-    browser = p.chromium.launch()
+    browser = p.chromium.launch(channel="chrome")
     page = browser.new_page()
-    page.goto(URL, timeout=45000)
+
+    # Site down / maintenance: skip quietly (exit OK) so you don't get failure emails
+    try:
+        resp = page.goto(URL, timeout=45000)
+    except Exception as e:
+        print(f"Site unreachable, skipping this round: {e}")
+        raise SystemExit(0)
+    status = resp.status if resp else 0
+    try:
+        body = page.inner_text("body", timeout=5000).lower()
+    except Exception:
+        body = ""
+    if status >= 500 or "down for maintenance" in body or "hooldust" in body:
+        print(f"Site in maintenance/unavailable (HTTP {status}), skipping this round")
+        raise SystemExit(0)
 
     first = page.locator("select").first
     first.wait_for(timeout=20000)
